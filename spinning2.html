@@ -302,71 +302,37 @@ style="position:absolute; left:1367px; top:445px; width:12.5px; height:12.5px; b
         });
 
         function changeColor(buttonId) {
-  const button = document.getElementById(buttonId);
-  
-  // Pair 1: Red/Green for button1_1, Yellow/White for button2_1
-  if (buttonId === 'button1_1') {
-    if (button.style.backgroundColor === 'red') {
-      button.style.backgroundColor = 'green';
-    } else {
-      button.style.backgroundColor = 'red';
-    }
-  }
-  if (buttonId === 'button2_1') {
-    if (button.style.backgroundColor === 'yellow') {
-      button.style.backgroundColor = 'white';
-    } else {
-      button.style.backgroundColor = 'yellow';
-    }
-  }
+    const button = document.getElementById(buttonId);
 
-  // Pair 2: Red/Green for button1_2, Yellow/White for button2_2
-  if (buttonId === 'button1_2') {
-    if (button.style.backgroundColor === 'red') {
-      button.style.backgroundColor = 'green';
-    } else {
-      button.style.backgroundColor = 'red';
-    }
-  }
-  if (buttonId === 'button2_2') {
-    if (button.style.backgroundColor === 'yellow') {
-      button.style.backgroundColor = 'white';
-    } else {
-      button.style.backgroundColor = 'yellow';
-    }
-  }
+    // Determine the pair (button1_x and button2_x)
+    const pairId = buttonId.includes('1') 
+        ? buttonId.replace('1', '2') 
+        : buttonId.replace('2', '1');
+    const pairedButton = document.getElementById(pairId);
 
-  // Pair 3: Red/Green for button1_3, Yellow/White for button2_3
-  if (buttonId === 'button1_3') {
-    if (button.style.backgroundColor === 'red') {
-      button.style.backgroundColor = 'green';
-    } else {
-      button.style.backgroundColor = 'red';
+    // Handle start/stop button (red/green)
+    if (buttonId.includes('button1')) {
+        if (button.style.backgroundColor === 'red') {
+            button.style.backgroundColor = 'green'; // Start
+        } else {
+            button.style.backgroundColor = 'red'; // Stop
+        }
     }
-  }
-  if (buttonId === 'button2_3') {
-    if (button.style.backgroundColor === 'yellow') {
-      button.style.backgroundColor = 'white';
-    } else {
-      button.style.backgroundColor = 'yellow';
+
+    // Handle trip/non-trip button (yellow/white)
+    if (buttonId.includes('button2')) {
+        if (button.style.backgroundColor === 'yellow') {
+            button.style.backgroundColor = 'white'; // Non-trip
+        } else {
+            button.style.backgroundColor = 'yellow'; // Trip
+            // Ensure paired button (start/stop) is stopped (red)
+            if (pairedButton.style.backgroundColor === 'green') {
+                pairedButton.style.backgroundColor = 'red';
+            }
+        }
     }
-  }
-  // Pair 4: Red/Green for button1_4, Yellow/White for button2_4
-  if (buttonId === 'button1_4') {
-    if (button.style.backgroundColor === 'red' || button.style.backgroundColor === '') {
-      button.style.backgroundColor = 'green';
-    } else {
-      button.style.backgroundColor = 'red';
-    }
-  }
-  if (buttonId === 'button2_4') {
-    if (button.style.backgroundColor === 'yellow' || button.style.backgroundColor === '') {
-      button.style.backgroundColor = 'white';
-    } else {
-      button.style.backgroundColor = 'yellow';
-    }
-  }
-} 
+}
+ 
 
        
 //         function startFan(fanId) {
@@ -388,47 +354,78 @@ let fanStates = {
     "fan3": { running: true, tripped: false }
 };
 
-function toggleFan(fanId) {
-    const fanImg = document.getElementById(fanId);
-    const toggleButton = document.getElementById(`${fanId}-toggle`);
-    const tripButton = document.getElementById(`${fanId}-trip`);
-    
-    // Only toggle if not tripped
-    if (!fanStates[fanId].tripped) {
-        fanStates[fanId].running = !fanStates[fanId].running;
+function changeColor(buttonId) {
+  const button = document.getElementById(buttonId);
 
-        if (fanStates[fanId].running) {
-            fanImg.src = "{{ url_for('static', filename='images/fan000.gif') }}";
-            toggleButton.style.backgroundColor = "green";
-        } else {
-            fanImg.src = "{{ url_for('static', filename='images/fan_stopped.png') }}";
-            toggleButton.style.backgroundColor = "red";
-        }
+  // Pair 1 logic
+  if (buttonId === 'button1_1') {
+    const tripButton = document.getElementById('button2_1');
+    if (tripButton.style.backgroundColor !== 'yellow') { // Only toggle if not tripped
+      button.style.backgroundColor =
+        button.style.backgroundColor === 'red' ? 'green' : 'red';
     }
-}
-
-function toggleTrip(fanId) {
-    const fanImg = document.getElementById(fanId);
-    const toggleButton = document.getElementById(`${fanId}-toggle`);
-    const tripButton = document.getElementById(`${fanId}-trip`);
-
-    // Toggle trip state
-    fanStates[fanId].tripped = !fanStates[fanId].tripped;
-
-    if (fanStates[fanId].tripped) {
-        fanImg.src = "{{ url_for('static', filename='images/fan_stopped.png') }}";
-        toggleButton.style.backgroundColor = "red";
-        tripButton.style.backgroundColor = "yellow";
+  }
+  if (buttonId === 'button2_1') {
+    if (button.style.backgroundColor === 'yellow') {
+      button.style.backgroundColor = 'white';
     } else {
-        tripButton.style.backgroundColor = "white";
-        
-        // Restart fan if it was running before trip
-        if (fanStates[fanId].running) {
-            fanImg.src = "{{ url_for('static', filename='images/fan000.gif') }}";
-            toggleButton.style.backgroundColor = "green";
-        }
+      button.style.backgroundColor = 'yellow';
+      document.getElementById('button1_1').style.backgroundColor = 'red'; // Stop the start button
     }
+  }
+
+  // Pair 2 logic
+  if (buttonId === 'button1_2') {
+    const tripButton = document.getElementById('button2_2');
+    if (tripButton.style.backgroundColor !== 'yellow') {
+      button.style.backgroundColor =
+        button.style.backgroundColor === 'red' ? 'green' : 'red';
+    }
+  }
+  if (buttonId === 'button2_2') {
+    if (button.style.backgroundColor === 'yellow') {
+      button.style.backgroundColor = 'white';
+    } else {
+      button.style.backgroundColor = 'yellow';
+      document.getElementById('button1_2').style.backgroundColor = 'red';
+    }
+  }
+
+  // Pair 3 logic
+  if (buttonId === 'button1_3') {
+    const tripButton = document.getElementById('button2_3');
+    if (tripButton.style.backgroundColor !== 'yellow') {
+      button.style.backgroundColor =
+        button.style.backgroundColor === 'red' ? 'green' : 'red';
+    }
+  }
+  if (buttonId === 'button2_3') {
+    if (button.style.backgroundColor === 'yellow') {
+      button.style.backgroundColor = 'white';
+    } else {
+      button.style.backgroundColor = 'yellow';
+      document.getElementById('button1_3').style.backgroundColor = 'red';
+    }
+  }
+
+  // Pair 4 logic
+  if (buttonId === 'button1_4') {
+    const tripButton = document.getElementById('button2_4');
+    if (tripButton.style.backgroundColor !== 'yellow') {
+      button.style.backgroundColor =
+        button.style.backgroundColor === 'red' ? 'green' : 'red';
+    }
+  }
+  if (buttonId === 'button2_4') {
+    if (button.style.backgroundColor === 'yellow') {
+      button.style.backgroundColor = 'white';
+    } else {
+      button.style.backgroundColor = 'yellow';
+      document.getElementById('button1_4').style.backgroundColor = 'red';
+    }
+  }
 }
+
 
 
 
